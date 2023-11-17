@@ -4,22 +4,24 @@
   "description": "float_cloud extension app",
   "manifest_version": 3,
   "icons": {
-    "16": "images/logo_extension.png",
-    "32": "images/logo_extension.png",
-    "48": "images/logo_extension.png",
-    "128": "images/logo_extension.png"
+    "16": "./images/logo_extension.png",
+    "32": "./images/logo_extension.png",
+    "48": "./images/logo_extension.png",
+    "128": "./images/logo_extension.png"
   },
-  "permission": ["storage", "scripting"],
+  "permissions": ["storage", "scripting", "activeTab" ],
   "host_permissions": [
-    "https://www.example.com/*"
+    "https://www.ddngoorm.xyz/*",
+    "http://api.ddngoorm.xyz/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches":["https://ddnggoorm.xyz/*"],
-      "js": ["content.js"]
+      "matches":["https://www.ddngoorm.xyz/*"],
+      "js": ["content.js"],
+      "run_at" : "document_idle"
     }
   ],
   "action": {

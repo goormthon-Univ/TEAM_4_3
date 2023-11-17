@@ -1,5 +1,6 @@
-/*global chrome*/
-const token = localStorage.getItem('yourTokenKey');
+/*global chrome */
 
-
-chrome.runtime.sendMessage({ token: token });
+const token = localStorage.getItem('accessToken'); 
+if (token) {
+  chrome.runtime.sendMessage({ type: "TOKEN_FOUND", token: token });
+}

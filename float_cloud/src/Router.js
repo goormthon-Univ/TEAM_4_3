@@ -8,13 +8,25 @@ import AuthLanding from './components/AuthLanding';
 function ExtensionRouter () {
   const [token, setToken] = useState('');
 
-  useEffect(()=> {
-    chrome.storage?.local?.get(['token'], function(result) {
+  useEffect(() => {
+    chrome.storage.local.get('token', (result) => {
       if (result.token) {
         setToken(result.token);
       }
     });
-  }, []);
+    
+    const messageListener = (message) => {
+      if (message.type === "TOKEN_FOUND") {
+        setToken(message.token);
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(messageListener);
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(messageListener);
+    };
+  }, [token]);
 
   return (
     <>

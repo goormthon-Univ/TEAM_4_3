@@ -1,10 +1,9 @@
 /*global chrome*/
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-    if (request.token) {
-      chrome.storage.local.set({ token: request.token }, function() {
-        console.log('Token is saved in local storage.');
-      });
-    }
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "TOKEN_FOUND") {
+    chrome.storage.local.set({ 'token': message.token }, () => {
+      console.log('Token is saved in chrome.storage');
+    });
   }
-);
+});
