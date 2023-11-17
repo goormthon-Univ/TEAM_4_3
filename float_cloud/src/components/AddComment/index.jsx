@@ -2,12 +2,13 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import Dropdown from '../DropDown';
 import * as S from './style';
-
+import { getTeams, postCloud } from '../../api';
 function AddComment ({ token }) {
   const [isOpenTeam, setIsOpenTeam] = useState(false);
   const [isOpenTopic, setIsOpenTopic] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
+  const [selectedTeam, setSelectedTeam] = useState({});
+  const [selectedTopic, setSelectedTopic] = useState({});
+  const [teamList, setTeamList] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isDisable, setDisable] = useState(true);
@@ -47,10 +48,30 @@ function AddComment ({ token }) {
       setDisable(true);
     }
   },[selectedTeam, selectedTopic, title, content, isDisable]);
-  const items = ["항목 1", "항목 2", "항목 3", "항목 4", "항목 5", "항목 6", "항목 7", "항목 8"];
+  useEffect(() => {
+    const handleTeamList = async () => {
+      const res = await getTeams(token);
+      if (res) {
+        setTeamList(res);
+      }
+    }
+    handleTeamList();
+  },[]);
 
-  const onSubmit =  async() => {
-    alert("구름이 작성 되었습니다.")
+  const onSubmit =  async(event) => {
+    event.preventDefault();
+    const data = {
+      team: selectedTeam.id,
+      topic: selectedTopic.id,
+      title: title,
+      contents: content,
+    }
+    const res = await postCloud(token, data);
+    if (res.code === 201) {
+      console.log(res.message)
+    } else {
+      alert("등록에 실패했습니다.")
+    }
   }
   return (
     <S.MainWrapper>
@@ -61,7 +82,7 @@ function AddComment ({ token }) {
         <S.SelectorWrap>
           <Dropdown 
             zIdx = {5}
-            items={items} 
+            items={teamList} 
             onItemSelect={handleSelectTeam} 
             isOpen={isOpenTeam}
             onToggle={toggleDropdownTeam}
@@ -70,7 +91,7 @@ function AddComment ({ token }) {
           <div style={{height:"10px"}} />
           <Dropdown 
             zIdx = {3}
-            items={items} 
+            items={selectedTeam.topics} 
             isOpen={isOpenTopic}
             onToggle={toggleDropdownTopic}
             onItemSelect={handleSelectTopic} 
@@ -89,7 +110,7 @@ function AddComment ({ token }) {
             onChange={e => handleContent(e)}>
           </S.ContentField>
         </S.TextFieldWrapper>
-        <S.SubmitButton onClick={onSubmit} disabled={isDisable}>확인</S.SubmitButton>
+        <S.SubmitButton onClick={(e) => onSubmit(e)} disabled={isDisable}>확인</S.SubmitButton>
       </S.CloudContainer>
     </S.MainWrapper>
   )
